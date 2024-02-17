@@ -11,6 +11,12 @@
       margin: 0;
       padding: 0;
       background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+      animation: gradient-animation 10s infinite alternate;
+    }
+
+    @keyframes gradient-animation {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
     }
 
     header {
@@ -23,6 +29,12 @@
       top: 0;
       left: 0;
       z-index: 1000;
+      animation: header-animation 2s ease-in-out;
+    }
+
+    @keyframes header-animation {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(0); }
     }
 
     .container {
@@ -32,6 +44,12 @@
       align-items: center;
       height: 100vh;
       padding-top: 80px; /* Adjusted padding to accommodate larger header */
+      animation: container-animation 2s ease-in-out;
+    }
+
+    @keyframes container-animation {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
     }
 
     #problem {
@@ -92,6 +110,12 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
       z-index: 9999;
       display: none;
+      animation: popup-animation 0.5s ease-in-out;
+    }
+
+    @keyframes popup-animation {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
     .popup-content {

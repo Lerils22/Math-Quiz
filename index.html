@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Math Quiz Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+    }
+
+    header {
+      background-color: #4CAF50;
+      color: white;
+      padding: 20px 0; /* Increased padding for better spacing */
+      font-size: 36px; /* Increased font size */
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding-top: 80px; /* Adjusted padding to accommodate larger header */
+    }
+
+    #problem {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      display: none; /* Initially hide */
+      width: 100%;
+      max-width: 200px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50;
+      color: white;
+      transition: background-color 0.3s;
+      margin-bottom: 10px; /* Add margin bottom */
+      width: 100%;
+      max-width: 200px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #score {
+      font-size: 18px;
+      margin-top: 20px;
+    }
+
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      display: none;
+    }
+
+    @media (min-width: 600px) {
+      .container {
+        width: 80%;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>Math Quiz</header>
+  <div class="container">
+    <div id="problem"></div>
+    <input type="number" id="answer" placeholder="Enter your answer">
+    <button id="submitButton">Submit</button>
+    <button id="startButton">Start Quiz</button>
+    <div id="score"></div>
+  </div>
+
+  <div class="popup" id="correctAnswerPopup">
+    <p>Correct Answer!</p>
+  </div>
+
+  <div class="popup" id="gameOverPopup">
+    <p>Game Over!</p>
+    <p>High Score: <span id="highScore">0</span></p>
+    <button id="restartButton">Restart</button>
+  </div>
+
+  <script>
+    var problemElement = document.getElementById('problem');
+    var answerElement = document.getElementById('answer');
+    var startButton = document.getElementById('startButton');
+    var submitButton = document.getElementById('submitButton');
+    var restartButton = document.getElementById('restartButton');
+    var scoreElement = document.getElementById('score');
+    var correctAnswerPopup = document.getElementById('correctAnswerPopup');
+    var gameOverPopup = document.getElementById('gameOverPopup');
+    var highScoreElement = document.getElementById('highScore');
+
+    var timerInterval;
+    var score = 0;
+    var highScore = 0;
+    var correctAnswer;
+    var correctAnswersCount = 0;
+
+    function startQuiz() {
+      score = 0;
+      scoreElement.textContent = 'Score: ' + score;
+      startButton.style.display = 'none'; // Hide Start Quiz button
+      submitButton.style.display = 'block'; // Show Submit button
+      submitButton.disabled = false;
+      generateProblem();
+    }
+
+    function generateProblem() {
+      var num1 = Math.floor(Math.random() * 10) + 1; // Generate random numbers between 1 and 10
+      var num2 = Math.floor(Math.random() * 10) + 1;
+      var operatorIndex = Math.floor(Math.random() * 4); // Generate random operator index (0 for +, 1 for -, 2 for *, 3 for /)
+      var operator;
+      
+      if (correctAnswersCount >= 5) {
+        num1 = Math.floor(Math.random() * 100) + 1; // Increase the range for larger numbers
+        num2 = Math.floor(Math.random() * 100) + 1;
+      }
+      
+      switch (operatorIndex) {
+        case 0:
+          operator = '+';
+          correctAnswer = num1 + num2;
+          break;
+        case 1:
+          operator = '-';
+          correctAnswer = num1 - num2;
+          break;
+        case 2:
+          operator = '*';
+          correctAnswer = num1 * num2;
+          break;
+        case 3:
+          operator = '/';
+          // Ensure division is valid (no division by zero and result is a whole number)
+          while (num1 % num2 !== 0) {
+            num1 = Math.floor(Math.random() * 10) + 1;
+            num2 = Math.floor(Math.random() * 10) + 1;
+          }
+          correctAnswer = num1 / num2;
+          break;
+      }
+
+      problemElement.textContent = num1 + ' ' + operator + ' ' + num2 + ' = ';
+
+      answerElement.style.display = 'block'; // Show input box
+
+      answerElement.value = ''; // Clear previous answer
+      answerElement.focus(); // Focus input field for convenience
+    }
+
+    function submitAnswer() {
+      var userAnswer = parseFloat(answerElement.value);
+      if (userAnswer === correctAnswer) {
+        score++;
+        correctAnswersCount++;
+        scoreElement.textContent = 'Score: ' + score;
+        if (score > highScore) {
+          highScore = score;
+          highScoreElement.textContent = highScore;
+        }
+        showCorrectAnswerPopup();
+        generateProblem();
+      } else {
+        showGameOverPopup();
+      }
+    }
+
+    function showCorrectAnswerPopup() {
+      correctAnswerPopup.style.display = 'block';
+      submitButton.disabled = true; // Disable submit button
+      setTimeout(function() {
+        correctAnswerPopup.style.display = 'none';
+        submitButton.disabled = false; // Re-enable submit button
+      }, 1000); // Hide after 1 second
+    }
+
+    function showGameOverPopup() {
+      highScoreElement.textContent = highScore;
+      gameOverPopup.style.display = 'block';
+      submitButton.disabled = true; // Disable submit button
+    }
+
+    function restartQuiz() {
+      location.reload(); // Reload the page
+    }
+
+    startButton.addEventListener('click', startQuiz);
+    submitButton.addEventListener('click', submitAnswer);
+    restartButton.addEventListener('click', restartQuiz);
+  </script>
+</body>
+</html>

@@ -132,8 +132,8 @@
     <input type="number" id="answer" placeholder="Enter your answer">
     <button id="submitButton">Submit</button>
     <button id="startButton">Start Quiz</button>
-    <div id="score"></div>
-    <div id="playerTitle">Player Title</div>
+    <div id="score">Score: 0</div>
+    <div id="playerTitle"></div>
   </div>
 
   <div class="popup" id="correctAnswerPopup">
@@ -165,9 +165,12 @@
 
     var timerInterval;
     var score = 0;
-    var highScore = 0;
+    var highScore = localStorage.getItem('highScore') || 0; // Get high score from local storage
     var correctAnswer;
     var correctAnswersCount = 0;
+
+    // Update high score display
+    highScoreElement.textContent = highScore;
 
     function startQuiz() {
       score = 0;
@@ -230,6 +233,7 @@
         updatePlayerTitle(score);
         if (score > highScore) {
           highScore = score;
+          localStorage.setItem('highScore', highScore); // Store high score in local storage
           highScoreElement.textContent = highScore;
         }
         showCorrectAnswerPopup();
